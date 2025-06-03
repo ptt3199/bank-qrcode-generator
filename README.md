@@ -41,7 +41,7 @@ A modern React application for generating QR codes for money transfers to Vietna
 
 1. Clone the repository:
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/ptt3199/bank-qrcode-generator.git
    cd qrcode-generator
    ```
 
@@ -88,7 +88,7 @@ qrcode-generator/
 
 ### Quick Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=your-repo-url)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ptt3199/bank-qrcode-generator)
 
 ### Manual Deployment
 
