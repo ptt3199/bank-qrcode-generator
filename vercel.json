@@ -1,14 +1,16 @@
 {
-    "version": 2,
     "functions": {
       "api/**/*.js": {
-        "runtime": "vercel/node@20.x"
+        "runtime": "@vercel/node"
+      },
+      "api/**/*.go": {
+        "runtime": "@vercel/go"
       }
     },
-    "routes": [
+    "rewrites": [
       {
-        "src": "/(.*)",
-        "dest": "/bin/www"
+        "source": "/((?!api/.*).*)",
+        "destination": "/index.html"
       }
     ]
   }

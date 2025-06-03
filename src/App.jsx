@@ -44,9 +44,9 @@ const App = () => {
     }
 
     try {
-      // Make a POST request to the Vercel serverless function
-      // Updated the fetch URL to use window.location.origin for absolute path
-      const response = await fetch(`${window.location.origin}/api/generate-qr`, {
+      // Make a POST request to the Go serverless function (faster performance)
+      // Using Go endpoint for better cold start times and lower memory usage
+      const response = await fetch(`${window.location.origin}/api/generate-qr.go`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,6 +140,13 @@ const App = () => {
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
           Money Transfer QR Code Generator
         </h1>
+
+        {/* Performance Badge */}
+        <div className="mb-6 text-center">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            ⚡ Powered by Go - Ultra Fast Performance
+          </span>
+        </div>
 
         {/* Input form */}
         <div className="space-y-6">
