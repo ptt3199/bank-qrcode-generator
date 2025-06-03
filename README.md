@@ -1,11 +1,12 @@
 # QR Code Generator for Vietnamese Bank Transfers
 
-A modern React application for generating QR codes for money transfers to Vietnamese banks. This application supports all major Vietnamese banks and generates VietQR-compatible codes with **ultra-fast Go serverless functions** for optimal performance.
+A modern React application for generating **real, scannable QR codes** for money transfers to Vietnamese banks. This application supports all major Vietnamese banks and generates VietQR-compatible codes with **ultra-fast Go serverless functions** for optimal performance.
 
 ## Features
 
 - 🏦 Support for major Vietnamese banks (VCB, TCB, BIDV, Agribank, etc.)
 - 💰 Easy money transfer QR code generation
+- 📱 **Real, scannable QR codes** - Compatible with all banking apps
 - 🎨 Modern, responsive UI with Tailwind CSS
 - ⚡ **Ultra-fast Go serverless functions** - Superior performance over Node.js
 - 🚀 Lightning-fast cold starts with Vercel
@@ -15,7 +16,8 @@ A modern React application for generating QR codes for money transfers to Vietna
 ## Tech Stack
 
 - **Frontend**: React 18, Vite, Tailwind CSS
-- **Backend**: **Go serverless functions** (with Node.js fallback)
+- **QR Generation**: qrcode.js library for real QR codes
+- **Backend**: **Go serverless functions**
 - **Deployment**: Vercel
 - **Styling**: Tailwind CSS with Inter font
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import QRCode from 'qrcode';
 
 // Main App component
 const App = () => {
@@ -76,63 +77,33 @@ const App = () => {
     }
   };
 
-  // --- Start of Self-contained QR Code Drawing Logic ---
-  // This is a simplified, self-contained QR code drawing function.
-  // For a full-featured and robust QR code generation, a dedicated library
-  // like 'qrcode.js' or 'qrious' is recommended for production use.
-  // This implementation aims to resolve the "Could not resolve" error by
-  // removing the external 'qrcode.react' dependency.
-
+  // Generate real QR code using qrcode library
   useEffect(() => {
     if (qrCodeData && canvasRef.current) {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      const size = 256; // Desired size of the QR code image
-
-      canvas.width = size;
-      canvas.height = size;
-
-      // Clear the canvas
-      ctx.clearRect(0, 0, size, size);
-      ctx.fillStyle = '#FFFFFF'; // White background
-      ctx.fillRect(0, 0, size, size); // Fill background
-
-      // Simple pseudo-QR code drawing based on the data string length
-      // This is NOT a real QR code encoder, but a visual representation
-      // to demonstrate the canvas drawing and remove the dependency error.
-      // For a functional QR code, a proper encoding algorithm is required.
-      const textLength = qrCodeData.length;
-      const cellSize = size / Math.ceil(Math.sqrt(textLength)); // Calculate cell size based on text length
       
-      let x = 0;
-      let y = 0;
-      for (let i = 0; i < textLength; i++) {
-        // Simple pattern based on character code
-        if (qrCodeData.charCodeAt(i) % 2 === 0) {
-          ctx.fillStyle = '#000000'; // Black module
-        } else {
-          ctx.fillStyle = '#E0E0E0'; // Light gray module
-        }
-        ctx.fillRect(x, y, cellSize, cellSize);
+      // QR code options
+      const qrOptions = {
+        errorCorrectionLevel: 'M',
+        type: 'image/png',
+        quality: 0.92,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        },
+        width: 256
+      };
 
-        x += cellSize;
-        if (x >= size) {
-          x = 0;
-          y += cellSize;
+      // Generate real QR code
+      QRCode.toCanvas(canvas, qrCodeData, qrOptions, (error) => {
+        if (error) {
+          console.error('Error generating QR code:', error);
+          setError('Failed to generate QR code visualization');
         }
-        if (y >= size) {
-          break; // Stop if canvas is full
-        }
-      }
-      // Note: The above is a simplified visual. For a real QR code,
-      // you would need a proper QR encoding algorithm (e.g., Reed-Solomon)
-      // to convert `qrCodeData` into a bit matrix, then draw that matrix.
-      // If `qrcode.react` or 'qrcode.js' can be installed in your deployment
-      // environment, they provide robust solutions.
+      });
     }
   }, [qrCodeData]);
-  // --- End of Self-contained QR Code Drawing Logic ---
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4 font-inter">
@@ -239,12 +210,18 @@ const App = () => {
         {/* QR Code Display Area */}
         {qrCodeData && (
           <div className="mt-8 text-center bg-gray-50 p-6 rounded-xl shadow-inner">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Your QR Code</h2>
-            <div className="flex justify-center">
-              {/* Canvas element to draw the QR code */}
-              <canvas ref={canvasRef} className="border border-gray-300 rounded-lg"></canvas>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Your Scannable QR Code</h2>
+            <div className="flex justify-center mb-4">
+              {/* Canvas element for the real QR code */}
+              <canvas 
+                ref={canvasRef} 
+                className="border border-gray-300 rounded-lg shadow-sm bg-white p-2"
+              />
             </div>
-            <p className="text-sm text-gray-600 mt-4 break-all">
+            <div className="text-xs text-green-600 mb-2 font-medium">
+              ✅ Ready to scan with any banking app
+            </div>
+            <p className="text-sm text-gray-600 break-all">
               <span className="font-semibold">QR Data:</span> {qrCodeData}
             </p>
           </div>
