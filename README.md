@@ -1,23 +1,27 @@
 # QR Code Generator for Vietnamese Bank Transfers
 
-A modern React application for generating **real, scannable QR codes** for money transfers to Vietnamese banks. This application supports all major Vietnamese banks and generates VietQR-compatible codes with **ultra-fast Go serverless functions** for optimal performance.
+A modern React application for generating **real, scannable QR codes** for money transfers to Vietnamese banks. This application supports all major Vietnamese banks and generates **TCCS 03:2018/NHNNVN compliant** VietQR codes with **ultra-fast Go serverless functions** for optimal performance.
 
 ## Features
 
 - 🏦 Support for major Vietnamese banks (VCB, TCB, BIDV, Agribank, etc.)
+   - [Bin code list](https://developers.zalo.me/docs/zalo-notification-service/phu-luc/danh-sach-bin-code)
 - 💰 Easy money transfer QR code generation
 - 📱 **Real, scannable QR codes** - Compatible with all banking apps
+- ✅ **TCCS 03:2018/NHNNVN Standard Compliant** - Official Vietnamese QR payment standard
 - 🎨 Modern, responsive UI with Tailwind CSS
 - ⚡ **Ultra-fast Go serverless functions** - Superior performance over Node.js
 - 🚀 Lightning-fast cold starts with Vercel
 - 📱 Mobile-friendly design
 - 🔧 Low memory footprint and high concurrency
+- 🔐 CRC-16 checksum validation for data integrity
 
 ## Tech Stack
 
 - **Frontend**: React 18, Vite, Tailwind CSS
-- **QR Generation**: qrcode.js library for real QR codes
+- **QR Generation**: qrcode.js library with high error correction
 - **Backend**: **Go serverless functions**
+- **Standard**: TCCS 03:2018/NHNNVN (Vietnamese National QR Payment Standard)
 - **Deployment**: Vercel
 - **Styling**: Tailwind CSS with Inter font
 
@@ -185,10 +189,28 @@ Legacy Node.js implementation for compatibility.
 
 ## VietQR Format
 
-The application generates QR codes in the standard VietQR format:
+The application generates QR codes following the **TCCS 03:2018/NHNNVN** standard with EMV QR Code specification:
+
+### Structure
+- **Version**: `000201` (EMV QR Code version)
+- **Initiation Method**: `010212` (Static QR)
+- **Merchant Info**: Nested structure containing bank and account details
+- **Transaction Info**: Amount, currency, country code
+- **Additional Info**: Optional message field
+- **CRC**: 4-digit CRC-16 checksum for data validation
+
+### Example Output
 ```
-{bankBin}|{accountNumber}|{amount}|{message}
+00020101021238540010A00000072701270006970415011010137720700208QRIBFTTA5303704540610000058802VN620405084Hello6304XXXX
 ```
+
+This format ensures compatibility with all Vietnamese banking applications and follows international EMV standards.
+
+## References
+
+This implementation was developed with reference to the TCCS 03:2018/NHNNVN standard and insights from the Vietnamese developer community.
+
+Special thanks to [Tạ Văn Dũng's technical post](https://www.facebook.com/dung.tavan/posts/pfbid02sPNyZN1stKb4UDBNaY7V3PZ8vfP2BWVX9VpZHS6LyPV2f8kK5suJepepbBWytuFml) for valuable implementation guidance on the Vietnamese QR payment standard.
 
 ## Contributing
 

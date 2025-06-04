@@ -30,6 +30,10 @@ const App = () => {
     { name: 'Sacombank', bin: '970403' },
     { name: 'VPBank', bin: '970432' },
     { name: 'VietinBank', bin: '970415' },
+    { name: 'DongABank', bin: '970406' },
+    { name: 'TPBank', bin: '970423' },
+    { name: 'SHB', bin: '970433' },
+    { name: 'OCB', bin: '970448' },
   ];
 
   // Function to handle QR code generation
@@ -84,15 +88,15 @@ const App = () => {
       
       // QR code options
       const qrOptions = {
-        errorCorrectionLevel: 'M',
+        errorCorrectionLevel: 'H',
         type: 'image/png',
         quality: 0.92,
-        margin: 1,
+        margin: 0,
         color: {
           dark: '#000000',
           light: '#FFFFFF'
         },
-        width: 256
+        width: 400
       };
 
       // Generate real QR code

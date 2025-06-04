@@ -37,6 +37,26 @@ type Response struct {
 	Error        string     `json:"error,omitempty"`
 }
 
+// generateCheckSum calculates CRC-16 checksum for EMV QR Code
+func generateCheckSum(text string) string {
+	crc := 0xFFFF
+	polynomial := 0x1021
+
+	for _, b := range []byte(text) {
+		for i := 0; i < 8; i++ {
+			bit := ((int(b) >> (7 - i)) & 1) == 1
+			c15 := ((crc >> 15) & 1) == 1
+			crc <<= 1
+			if c15 != bit {
+				crc ^= polynomial
+			}
+		}
+	}
+
+	crc &= 0xFFFF
+	return strings.ToUpper(fmt.Sprintf("%04X", crc))
+}
+
 // Handler is the main function that handles HTTP requests
 func Handler(w http.ResponseWriter, r *http.Request) {
 	// Set CORS headers for all requests
@@ -93,20 +113,49 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Format the VietQR string according to the standard
-	qrString := fmt.Sprintf("%s|%s|%.0f", req.BankBinCode, req.BankAccount, numericAmount)
+	// Clean inputs
+	inputBankCode := strings.TrimSpace(req.BankBinCode)
+	inputBankAccount := strings.TrimSpace(req.BankAccount)
+	inputAmount := strings.TrimSpace(req.Amount)
+	inputMessage := strings.TrimSpace(req.Message)
 
-	// Add message if provided
-	if req.Message != "" {
-		// Remove special characters and limit message length
-		cleanMessage := strings.ReplaceAll(strings.TrimSpace(req.Message), "|", "")
-		if len(cleanMessage) > 100 {
-			cleanMessage = cleanMessage[:100]
+	// Build part12 (bank account info) - nested inside part11
+	part12Builder := fmt.Sprintf("00%02d%s01%02d%s", len(inputBankCode), inputBankCode, len(inputBankAccount), inputBankAccount)
+
+	// Build part11 (NAPAS info) - contains part12 nested inside
+	part11Builder := fmt.Sprintf("0010A00000072701%02d%s0208QRIBFTTA", len(part12Builder), part12Builder)
+
+	// Build part1 (main merchant info)
+	part1Builder := fmt.Sprintf("38%02d%s", len(part11Builder), part11Builder)
+
+	// Build part21 (additional message if provided)
+	var part21Builder string
+	if inputMessage != "" {
+		if len(inputMessage) > 50 {
+			inputMessage = inputMessage[:50]
 		}
-		if cleanMessage != "" {
-			qrString += "|" + cleanMessage
-		}
+		part21Builder = fmt.Sprintf("08%02d%s", len(inputMessage), inputMessage)
 	}
+
+	// Build part2 (transaction info)
+	part2 := "5303704" + "54" + fmt.Sprintf("%02d", len(inputAmount)) + inputAmount + "5802VN"
+	if part21Builder != "" {
+		part2 += "62" + fmt.Sprintf("%02d", len(part21Builder)) + part21Builder
+	}
+
+	// Build main QR string without checksum
+	builder := "000201" + "010212" + part1Builder + part2 + "6304"
+
+	// Calculate checksum
+	checksum := generateCheckSum(builder)
+
+	// Pad checksum to 4 characters if needed
+	for len(checksum) < 4 {
+		checksum = "0" + checksum
+	}
+
+	// Final QR string
+	qrString := builder + checksum
 
 	// Create VietQR metadata
 	vietQrData := VietQRData{
